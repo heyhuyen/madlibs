@@ -36,7 +36,7 @@ class RandomPOS:
             return noun + 's'
 
     def past(self, verb):
-        if (re.search('[e]$', noun):
+        if re.search('[e]$', noun):
             return verb + 'd'
         else:
             return verb + 'ed'
@@ -48,7 +48,8 @@ if __name__ == "__main__":
     if len(sys.argv) == 4:
         infile, outfile, random = sys.argv[1:]
     else:
-        print "Usage: responses.py <filename>"
+        print "Usage: responses.py <markers filename> <blanks filename> <random: True/False>"
+        sys.exit()
 
     blanks_file = open(infile)
     blanks = blanks_file.read().split('\n')

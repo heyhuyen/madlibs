@@ -13,6 +13,10 @@ if __name__ == "__main__":
 
     text = open(textfile)
     tokens = SExprTokenizer(parens='[]').tokenize(text.read())
+
+    #SExprTokenizer leaves token following last marker with whitespace
+    tokens[-1].strip()
+
     text.close()
     replace = [i for i, token in enumerate(tokens) if token.startswith('[')]
 
