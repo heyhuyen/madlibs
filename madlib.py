@@ -1,3 +1,4 @@
+import pdb
 import sys
 from nltk import SExprTokenizer
 
@@ -15,7 +16,7 @@ if __name__ == "__main__":
     tokens = SExprTokenizer(parens='[]').tokenize(text.read())
 
     #SExprTokenizer leaves token following last marker with whitespace
-    tokens[-1].strip()
+    tokens[-1] = tokens[-1].strip()
 
     text.close()
     replace = [i for i, token in enumerate(tokens) if token.startswith('[')]
