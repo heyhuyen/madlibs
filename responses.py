@@ -1,29 +1,39 @@
+import pdb
 import sys
 from random import choice
 import re
+import nltk
+from nltk.corpus import brown
 
 class RandomPOS:
-    def __init__(self, pos_file):
+    def __init__(self):
         self.nouns = []
         self.verbs = []
         self.adjs = []
+        self.setup()
 
-    def random_noun(self, plural=False):
-        if plural:
-            return self.plural(choice(self.nouns))
-        else:
+    def setup(self):
+        for tag in brown.tagged_words(categories='news'):
+            if tag[1] == 'NN':
+                self.nouns.append(tag[0])
+            elif tag[1] == 'VB':
+                self.verbs.append(tag[0])
+            elif tag[1] == 'JJ':
+                self.adjs.append(tag[0])
+
+    def random_pos(self, pos):
+        if pos == 'NN':
             return choice(self.nouns)
-
-    def random_adj(self):
-        return choice(self.adj)
-
-    def random_verb(self, past=False, prog=False):
-        if past:
-            return self.past(choice(self.verbs))
-        elif prog:
-            return self.prog(choice(self.verbs))
-        else:
+        elif pos == 'VB':
             return choice(self.verbs)
+        elif pos == 'JJ':
+            return choice(self.adjs)
+        elif pos == 'NNS':
+            return self.plural(choice(self.nouns))
+        elif pos == 'VBD':
+            return self.past(choice(self.verbs))
+        elif pos == 'VBG':
+            return self.prog(choice(self.verbs))
 
     def plural(self, noun):
         if re.search('[sxz]$', noun):
@@ -36,12 +46,14 @@ class RandomPOS:
             return noun + 's'
 
     def past(self, verb):
-        if re.search('[e]$', noun):
+        if re.search('[e]$', verb):
             return verb + 'd'
         else:
             return verb + 'ed'
 
     def prog(self, verb):
+        if re.search('[e]$', verb):
+            return verb[:-1] + 'ing'
         return verb + 'ing'
 
 if __name__ == "__main__":
@@ -53,19 +65,19 @@ if __name__ == "__main__":
 
     blanks_file = open(infile)
     blanks = blanks_file.read().split('\n')
+    blanks.pop()
     blanks_file.close()
 
     responses_file = open(outfile, 'w')
 
     if random.lower() == "false":
         for blank in blanks:
-            if len(blank) > 0:
-                response = raw_input(blank + ': ')
-                responses_file.write(response.strip()  + '\n')
+            response = raw_input(blank + ': ')
+            responses_file.write(response.strip()  + '\n')
 
     else:
         for blank in blanks:
-            #find a random match for the marker category
-            random_marker_match = 'random word'
+            lib = RandomPOS()
+            random_marker_match = lib.random_pos(blank).lower()
             responses_file.write(random_marker_match + '\n')
     responses_file.close()
