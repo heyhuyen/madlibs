@@ -1,9 +1,8 @@
-import pdb
 import sys
-from random import choice
 import re
 import nltk
 from nltk.corpus import brown
+from random import choice
 
 class RandomPOS:
     def __init__(self):
