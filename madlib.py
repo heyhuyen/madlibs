@@ -3,6 +3,7 @@ import nltk
 from nltk import SExprTokenizer
 from responses import RandomPOS
 from urllib import urlopen
+from argparse import ArgumentParser
 
 TAGSET = ['NN', 'NNS', 'VB', 'VBD', 'VBG', 'JJ']
 
@@ -31,16 +32,21 @@ def random_words(pos_list):
 def words_from_user(pos_list):
     return [raw_input('%s: ' % pos) for pos in pos_list]
 
+def setup_parser():
+    parser = ArgumentParser(description='Turn text into a madlib.')
+    parser.add_argument('text', type=str, help='text to create madlib')
+    parser.add_argument('-u', '--url', action='store_true', help='specify text source is url')
+    parser.add_argument('-a', '--auto-fill', action='store_true', 
+                        help='automatically fill in madlib')
+    return parser
+
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        text_src = sys.argv[1]
-        if text_src.endswith('.txt'):
-            text = text_from_file(text_src)
-        else:
-            text = text_from_url(text_src)
+    parser = setup_parser()
+    args = parser.parse_args()
+    if args.url:
+        text = text_from_url(args.text)
     else:
-        print "Usage: madlib.py <textfile>"
-        sys.exit()
+        text = text_from_file(args.text)
 
     print 'ORIGINAL: %s' % text
     tokens = nltk.word_tokenize(text)
@@ -54,14 +60,15 @@ if __name__ == "__main__":
             pos_tokens.append(pos)
             indices.append(i)
 
-    print 'MARKED: %s' % ' '.join(tokens)
+    print 'MARKED: %s\n' % ' '.join(tokens)
 
-    words = random_words(pos_tokens)
-    #words = words_from_user(pos_tokens)
+    if args.auto_fill:
+        words = random_words(pos_tokens)
+    else:
+        words = words_from_user(pos_tokens)
     words.reverse()
 
     for i in indices:
         tokens[i] = words.pop()
 
     print 'MADLIB: %s' % ' '.join(tokens)
-
